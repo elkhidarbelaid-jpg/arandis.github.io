@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel — Example</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface2: #1a1a1a;
+            --border: #2a2a2a;
+            --accent: #d4af67;
+            --accent-hover: #e5c078;
+            --text: #f0f0f0;
+            --muted: #888;
+            --danger: #e05555;
+            --success: #4caf82;
+            --radius: 8px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── LOGIN SCREEN ─────────────────────────────── */
+        #loginScreen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--bg);
+        }
+
+        .login-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 3rem 3.5rem;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .login-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            color: var(--accent);
+            margin-bottom: 0.4rem;
+        }
+
+        .login-sub {
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-bottom: 2.5rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .login-card input[type="password"] {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.9rem 1.2rem;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-family: 'Montserrat', sans-serif;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s;
+            text-align: center;
+            letter-spacing: 4px;
+        }
+
+        .login-card input[type="password"]:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .login-error {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            min-height: 1.2em;
+        }
+
+        /* ── MAIN ADMIN LAYOUT ────────────────────────── */
+        #adminApp { display: none; }
+
+        .topbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--accent);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .topbar-right span {
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        /* ── BUTTONS ──────────────────────────────────── */
+        .btn {
+            padding: 0.6rem 1.4rem;
+            border-radius: var(--radius);
+            font-size: 0.85rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.25s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-gold {
+            background: var(--accent);
+            color: #000;
+        }
+        .btn-gold:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+        .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+        .btn-danger {
+            background: transparent;
+            border: 1px solid #3a1a1a;
+            color: var(--danger);
+            font-size: 0.8rem;
+            padding: 0.4rem 0.9rem;
+        }
+        .btn-danger:hover { background: rgba(224,85,85,0.1); }
+
+        .btn-edit {
+            background: transparent;
+            border: 1px solid #1a2a1a;
+            color: var(--success);
+            font-size: 0.8rem;
+            padding: 0.4rem 0.9rem;
+        }
+        .btn-edit:hover { background: rgba(76,175,130,0.1); }
+
+        .btn-sm {
+            padding: 0.35rem 0.8rem;
+            font-size: 0.75rem;
+        }
+
+        /* ── CONTENT AREA ─────────────────────────────── */
+        .content {
+            padding: 2rem 2.5rem;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* ── TABS ─────────────────────────────────────── */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0;
+        }
+
+        .tab {
+            padding: 0.7rem 1.6rem;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--muted);
+            border: 1px solid transparent;
+            border-bottom: none;
+            transition: all 0.2s;
+            position: relative;
+            bottom: -1px;
+        }
+
+        .tab.active {
+            color: var(--accent);
+            border-color: var(--border);
+            border-bottom-color: var(--bg);
+            background: var(--bg);
+        }
+
+        .tab:not(.active):hover { color: var(--text); }
+
+        /* ── STATS ROW ────────────────────────────────── */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        /* ── LISTING TABLE ────────────────────────────── */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .section-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            font-weight: 400;
+            color: var(--text);
+        }
+
+        .listings-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .listings-table th {
+            background: var(--surface2);
+            padding: 0.9rem 1.2rem;
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .listings-table td {
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.88rem;
+            vertical-align: middle;
+        }
+
+        .listings-table tr:last-child td { border-bottom: none; }
+
+        .listings-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .thumb {
+            width: 64px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .thumb-placeholder {
+            width: 64px;
+            height: 48px;
+            background: var(--surface2);
+            border-radius: 4px;
+            border: 1px dashed var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 500;
+        }
+
+        .badge-property { background: #1a2535; color: #6fa8dc; }
+        .badge-car      { background: #2a1a10; color: #e6a87c; }
+
+        .actions { display: flex; gap: 0.5rem; }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+            color: var(--muted);
+        }
+
+        .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+
+        /* ── MODAL ────────────────────────────────────── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 640px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 1.4rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover { color: var(--text); }
+
+        .modal-body { padding: 2rem; }
+
+        .modal-footer {
+            padding: 1.2rem 2rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.8rem;
+            justify-content: flex-end;
+        }
+
+        /* ── FORM ─────────────────────────────────────── */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group.full { grid-column: 1 / -1; }
+
+        label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="url"],
+        select,
+        textarea {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.7rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.88rem;
+            font-family: 'Montserrat', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        select option { background: #111; }
+
+        textarea { resize: vertical; min-height: 70px; }
+
+        /* Photo URLs */
+        .photo-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+        .photo-row {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+        }
+
+        .photo-row input { flex: 1; }
+
+        .photo-preview {
+            width: 48px;
+            height: 36px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            display: none;
+        }
+
+        .photo-remove {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0 0.3rem;
+            transition: transform 0.2s;
+        }
+
+        .photo-remove:hover { transform: scale(1.2); }
+
+        .add-photo-btn {
+            background: none;
+            border: 1px dashed var(--border);
+            color: var(--muted);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.2s;
+            margin-top: 0.3rem;
+            width: 100%;
+        }
+
+        .add-photo-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* type toggle */
+        .type-toggle {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .type-btn {
+            flex: 1;
+            padding: 0.6rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .type-btn.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(212,175,103,0.08);
+        }
+
+        /* toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--accent);
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            font-size: 0.88rem;
+            z-index: 9999;
+            animation: toastIn 0.3s ease;
+            display: none;
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .photo-counter {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 0.3rem;
+        }
+
+        @media (max-width: 768px) {
+            .content { padding: 1rem; }
+            .topbar  { padding: 1rem; }
+            .stats   { grid-template-columns: 1fr 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full { grid-column: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ───────── LOGIN ───────────────────────────────────── -->
+<div id="loginScreen">
+    <div class="login-card">
+        <div class="login-logo">EXAMPLE</div>
+        <div class="login-sub">Admin Panel</div>
+        <input type="password" id="pwInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')login()">
+        <div class="login-error" id="loginError"></div>
+        <button class="btn btn-gold" style="width:100%;padding:0.9rem;" onclick="login()">Sign In</button>
+    </div>
+</div>
+
+<!-- ───────── ADMIN APP ───────────────────────────────── -->
+<div id="adminApp">
+    <div class="topbar">
+        <div class="topbar-logo">EXAMPLE</div>
+        <div class="topbar-right">
+            <span>Admin Panel</span>
+            <button class="btn btn-outline" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Stats -->
+        <div class="stats" id="statsRow"></div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('all',this)">All Listings</div>
+            <div class="tab" onclick="switchTab('property',this)">Properties</div>
+            <div class="tab" onclick="switchTab('car',this)">Cars</div>
+        </div>
+
+        <!-- Table -->
+        <div class="section-header">
+            <h2 id="tableTitle">All Listings</h2>
+            <button class="btn btn-gold" onclick="openModal()">+ Add Listing</button>
+        </div>
+
+        <table class="listings-table" id="listingsTable">
+            <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Title</th>
+                    <th>Type</th>
+                    <th>Price</th>
+                    <th>Location</th>
+                    <th>Details</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="listingsBody"></tbody>
+        </table>
+        <div class="empty-state" id="emptyState" style="display:none">
+            <div class="icon">🏠</div>
+            <p>No listings yet. Click <strong>+ Add Listing</strong> to get started.</p>
+        </div>
+
+    </div>
+</div>
+
+<!-- ───────── ADD / EDIT MODAL ───────────────────────── -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modalTitle">Add New Listing</h3>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+
+            <!-- Type toggle -->
+            <div class="form-group" style="margin-bottom:1.5rem;">
+                <label>Listing Type</label>
+                <div class="type-toggle">
+                    <div class="type-btn active" id="typeProperty" onclick="setType('property')">🏠 Property</div>
+                    <div class="type-btn" id="typeCar" onclick="setType('car')">🚗 Car</div>
+                </div>
+            </div>
+
+            <div class="form-grid">
+
+                <!-- Title AR -->
+                <div class="form-group">
+                    <label>Title (Arabic)</label>
+                    <input type="text" id="fTitleAr" placeholder="العنوان بالعربية" dir="rtl">
+                </div>
+                <!-- Title EN -->
+                <div class="form-group">
+                    <label>Title (English)</label>
+                    <input type="text" id="fTitleEn" placeholder="English title">
+                </div>
+                <!-- Title FR -->
+                <div class="form-group">
+                    <label>Title (French)</label>
+                    <input type="text" id="fTitleFr" placeholder="Titre en français">
+                </div>
+
+                <!-- Price -->
+                <div class="form-group">
+                    <label>Price (e.g. $450,000)</label>
+                    <input type="text" id="fPrice" placeholder="$000,000">
+                </div>
+
+                <!-- City -->
+                <div class="form-group">
+                    <label>City</label>
+                    <select id="fCity">
+                        <option value="nouakchott">Nouakchott</option>
+                        <option value="nouadhibou">Nouadhibou</option>
+                        <option value="kaedi">Kaédi</option>
+                        <option value="rosso">Rosso</option>
+                        <option value="zouerate">Zouérate</option>
+                    </select>
+                </div>
+
+                <!-- Location label AR -->
+                <div class="form-group">
+                    <label>Location Label (Arabic)</label>
+                    <input type="text" id="fLocAr" placeholder="نواكشوط، موريتانيا" dir="rtl">
+                </div>
+                <!-- Location label EN -->
+                <div class="form-group">
+                    <label>Location Label (English)</label>
+                    <input type="text" id="fLocEn" placeholder="Nouakchott, Mauritania">
+                </div>
+                <!-- Location label FR -->
+                <div class="form-group">
+                    <label>Location Label (French)</label>
+                    <input type="text" id="fLocFr" placeholder="Nouakchott, Mauritanie">
+                </div>
+
+                <!-- Property-specific fields -->
+                <div class="form-group prop-field">
+                    <label>Beds</label>
+                    <input type="number" id="fBeds" placeholder="4" min="0">
+                </div>
+                <div class="form-group prop-field">
+                    <label>Baths</label>
+                    <input type="number" id="fBaths" placeholder="3" min="0">
+                </div>
+                <div class="form-group prop-field">
+                    <label>Area (sq ft)</label>
+                    <input type="text" id="fArea" placeholder="3,200 sq ft">
+                </div>
+
+                <!-- Car-specific fields (hidden by default) -->
+                <div class="form-group car-field" style="display:none">
+                    <label>Horsepower</label>
+                    <input type="text" id="fHp" placeholder="640 hp">
+                </div>
+                <div class="form-group car-field" style="display:none">
+                    <label>Year</label>
+                    <input type="number" id="fYear" placeholder="2024" min="1900" max="2099">
+                </div>
+                <div class="form-group car-field" style="display:none">
+                    <label>Fuel Type</label>
+                    <select id="fFuel">
+                        <option value="petrol">Petrol / بنزين / Essence</option>
+                        <option value="electric">Electric / كهربائي / Électrique</option>
+                        <option value="diesel">Diesel</option>
+                        <option value="hybrid">Hybrid / هجين / Hybride</option>
+                    </select>
+                </div>
+
+                <!-- Photos -->
+                <div class="form-group full">
+                    <label>Photos (paste image URLs — at least 1, up to 6)</label>
+                    <div class="photo-list" id="photoList"></div>
+                    <button type="button" class="add-photo-btn" onclick="addPhotoRow()">+ Add Photo URL</button>
+                    <div class="photo-counter" id="photoCounter">0 photos added</div>
+                </div>
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-gold" onclick="saveListing()">Save Listing</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── PASSWORD ────────────────────────────────────────────────
+// Change this to your desired password:
+const ADMIN_PASSWORD = 'example123';
+
+function login() {
+    const val = document.getElementById('pwInput').value;
+    if (val === ADMIN_PASSWORD) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminApp').style.display = 'block';
+        sessionStorage.setItem('adminAuth', '1');
+        renderAll();
+    } else {
+        const err = document.getElementById('loginError');
+        err.textContent = 'Incorrect password. Please try again.';
+        document.getElementById('pwInput').value = '';
+        setTimeout(() => err.textContent = '', 3000);
+    }
+}
+
+function logout() {
+    sessionStorage.removeItem('adminAuth');
+    location.reload();
+}
+
+// Check if already logged in this session
+if (sessionStorage.getItem('adminAuth') === '1') {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'block';
+}
+
+// ─── DATA ────────────────────────────────────────────────────
+const STORAGE_KEY = 'example_listings';
+
+function getListings() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
+}
+
+function saveListings(arr) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+}
+
+// ─── STATE ───────────────────────────────────────────────────
+let currentTab = 'all';
+let editingId = null;
+let currentType = 'property';
+
+// ─── RENDER ──────────────────────────────────────────────────
+function renderAll() {
+    renderStats();
+    renderTable();
+}
+
+function renderStats() {
+    const listings = getListings();
+    const props = listings.filter(l => l.type === 'property');
+    const cars  = listings.filter(l => l.type === 'car');
+    document.getElementById('statsRow').innerHTML = `
+        <div class="stat-card"><div class="stat-label">Total Listings</div><div class="stat-value">${listings.length}</div></div>
+        <div class="stat-card"><div class="stat-label">Properties</div><div class="stat-value">${props.length}</div></div>
+        <div class="stat-card"><div class="stat-label">Cars</div><div class="stat-value">${cars.length}</div></div>
+        <div class="stat-card"><div class="stat-label">Cities</div><div class="stat-value">${[...new Set(listings.map(l=>l.city))].length}</div></div>
+    `;
+}
+
+function renderTable() {
+    const listings = getListings();
+    const filtered = currentTab === 'all' ? listings : listings.filter(l => l.type === currentTab);
+    const tbody = document.getElementById('listingsBody');
+    const empty = document.getElementById('emptyState');
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        document.getElementById('listingsTable').style.display = 'none';
+    } else {
+        empty.style.display = 'none';
+        document.getElementById('listingsTable').style.display = 'table';
+        tbody.innerHTML = filtered.map(l => {
+            const thumb = l.photos && l.photos[0]
+                ? `<img class="thumb" src="${escHtml(l.photos[0])}" onerror="this.style.display='none'">`
+                : `<div class="thumb-placeholder">${l.type === 'car' ? '🚗' : '🏠'}</div>`;
+            const badge = l.type === 'car'
+                ? `<span class="badge badge-car">Car</span>`
+                : `<span class="badge badge-property">Property</span>`;
+            const details = l.type === 'car'
+                ? `${l.hp || '—'} · ${l.year || '—'}`
+                : `${l.beds || '—'} beds · ${l.baths || '—'} baths`;
+            return `
+            <tr>
+                <td>${thumb}</td>
+                <td><strong>${escHtml(l.titleEn || l.titleAr || 'Untitled')}</strong><br><small style="color:var(--muted)">${escHtml(l.titleAr || '')}</small></td>
+                <td>${badge}</td>
+                <td style="color:var(--accent);font-weight:600">${escHtml(l.price || '—')}</td>
+                <td>${escHtml(l.locEn || l.city || '—')}</td>
+                <td style="color:var(--muted);font-size:0.82rem">${details}</td>
+                <td><div class="actions">
+                    <button class="btn btn-edit btn-sm" onclick="editListing('${l.id}')">Edit</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteListing('${l.id}')">Delete</button>
+                </div></td>
+            </tr>`;
+        }).join('');
+    }
+}
+
+function escHtml(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function switchTab(tab, el) {
+    currentTab = tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    const titles = { all: 'All Listings', property: 'Properties', car: 'Cars' };
+    document.getElementById('tableTitle').textContent = titles[tab];
+    renderTable();
+}
+
+// ─── MODAL ───────────────────────────────────────────────────
+function openModal(listing = null) {
+    editingId = listing ? listing.id : null;
+    document.getElementById('modalTitle').textContent = listing ? 'Edit Listing' : 'Add New Listing';
+
+    // Reset form
+    ['fTitleAr','fTitleEn','fTitleFr','fPrice','fLocAr','fLocEn','fLocFr',
+     'fBeds','fBaths','fArea','fHp','fYear'].forEach(id => {
+        document.getElementById(id).value = '';
+    });
+    document.getElementById('fCity').value = 'nouakchott';
+    document.getElementById('fFuel').value = 'petrol';
+    document.getElementById('photoList').innerHTML = '';
+    updatePhotoCounter();
+
+    if (listing) {
+        setType(listing.type || 'property');
+        document.getElementById('fTitleAr').value = listing.titleAr || '';
+        document.getElementById('fTitleEn').value = listing.titleEn || '';
+        document.getElementById('fTitleFr').value = listing.titleFr || '';
+        document.getElementById('fPrice').value = listing.price || '';
+        document.getElementById('fCity').value = listing.city || 'nouakchott';
+        document.getElementById('fLocAr').value = listing.locAr || '';
+        document.getElementById('fLocEn').value = listing.locEn || '';
+        document.getElementById('fLocFr').value = listing.locFr || '';
+        document.getElementById('fBeds').value = listing.beds || '';
+        document.getElementById('fBaths').value = listing.baths || '';
+        document.getElementById('fArea').value = listing.area || '';
+        document.getElementById('fHp').value = listing.hp || '';
+        document.getElementById('fYear').value = listing.year || '';
+        document.getElementById('fFuel').value = listing.fuel || 'petrol';
+        (listing.photos || []).forEach(url => addPhotoRow(url));
+    } else {
+        setType('property');
+        addPhotoRow(); addPhotoRow(); addPhotoRow();
+    }
+
+    document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    editingId = null;
+}
+
+function setType(type) {
+    currentType = type;
+    document.getElementById('typeProperty').classList.toggle('active', type === 'property');
+    document.getElementById('typeCar').classList.toggle('active', type === 'car');
+    document.querySelectorAll('.prop-field').forEach(el => el.style.display = type === 'property' ? '' : 'none');
+    document.querySelectorAll('.car-field').forEach(el => el.style.display = type === 'car' ? '' : 'none');
+}
+
+// ─── PHOTOS ──────────────────────────────────────────────────
+function addPhotoRow(url = '') {
+    const list = document.getElementById('photoList');
+    const row = document.createElement('div');
+    row.className = 'photo-row';
+    row.innerHTML = `
+        <img class="photo-preview" src="${escHtml(url)}" ${url ? 'style="display:block"' : ''}>
+        <input type="url" placeholder="https://images.unsplash.com/..." value="${escHtml(url)}" oninput="previewPhoto(this)" onpaste="setTimeout(()=>previewPhoto(this),50)">
+        <button type="button" class="photo-remove" onclick="removePhotoRow(this)" title="Remove">✕</button>
+    `;
+    list.appendChild(row);
+    updatePhotoCounter();
+}
+
+function previewPhoto(input) {
+    const img = input.previousElementSibling;
+    const val = input.value.trim();
+    if (val) {
+        img.src = val;
+        img.style.display = 'block';
+        img.onerror = () => { img.style.display = 'none'; };
+    } else {
+        img.style.display = 'none';
+    }
+    updatePhotoCounter();
+}
+
+function removePhotoRow(btn) {
+    btn.closest('.photo-row').remove();
+    updatePhotoCounter();
+}
+
+function updatePhotoCounter() {
+    const inputs = document.querySelectorAll('#photoList input[type="url"]');
+    const filled = [...inputs].filter(i => i.value.trim()).length;
+    document.getElementById('photoCounter').textContent = `${filled} photo${filled !== 1 ? 's' : ''} added`;
+}
+
+// ─── SAVE ────────────────────────────────────────────────────
+function saveListing() {
+    const photos = [...document.querySelectorAll('#photoList input[type="url"]')]
+        .map(i => i.value.trim()).filter(Boolean);
+
+    const titleEn = document.getElementById('fTitleEn').value.trim();
+    const price   = document.getElementById('fPrice').value.trim();
+
+    if (!titleEn) { showToast('⚠️ English title is required.'); return; }
+    if (!price)   { showToast('⚠️ Price is required.'); return; }
+    if (!photos.length) { showToast('⚠️ At least one photo URL is required.'); return; }
+
+    const listing = {
+        id: editingId || Date.now().toString(),
+        type: currentType,
+        titleAr: document.getElementById('fTitleAr').value.trim(),
+        titleEn,
+        titleFr: document.getElementById('fTitleFr').value.trim(),
+        price,
+        city: document.getElementById('fCity').value,
+        locAr: document.getElementById('fLocAr').value.trim(),
+        locEn: document.getElementById('fLocEn').value.trim(),
+        locFr: document.getElementById('fLocFr').value.trim(),
+        photos,
+        // property
+        beds:  document.getElementById('fBeds').value  || '',
+        baths: document.getElementById('fBaths').value || '',
+        area:  document.getElementById('fArea').value.trim(),
+        // car
+        hp:   document.getElementById('fHp').value.trim(),
+        year: document.getElementById('fYear').value,
+        fuel: document.getElementById('fFuel').value,
+    };
+
+    const listings = getListings();
+    if (editingId) {
+        const idx = listings.findIndex(l => l.id === editingId);
+        if (idx !== -1) listings[idx] = listing;
+    } else {
+        listings.push(listing);
+    }
+    saveListings(listings);
+
+    closeModal();
+    renderAll();
+    showToast(editingId ? '✅ Listing updated!' : '✅ Listing added!');
+}
+
+function editListing(id) {
+    const listing = getListings().find(l => l.id === id);
+    if (listing) openModal(listing);
+}
+
+function deleteListing(id) {
+    if (!confirm('Delete this listing? This cannot be undone.')) return;
+    saveListings(getListings().filter(l => l.id !== id));
+    renderAll();
+    showToast('🗑️ Listing deleted.');
+}
+
+// ─── TOAST ───────────────────────────────────────────────────
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.style.display = 'none'; }, 3000);
+}
+
+// ─── INIT ────────────────────────────────────────────────────
+if (sessionStorage.getItem('adminAuth') === '1') {
+    renderAll();
+}
+</script>
+</body>
+</html>
